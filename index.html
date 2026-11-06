@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kirks | Mission Control</title>
+    <link rel="stylesheet" href="style.css" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Rajdhani:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- Fondo -->
+    <div class="stars stars-far"></div>
+    <div class="stars stars-near"></div>
+    <div class="nebula"></div>
+
+    <!-- Elementos flotantes -->
+    <img
+      src="assets/spacecraft/nave-sprites.gif"
+      alt=""
+      class="ship"
+      aria-hidden="true"
+    />
+    <img
+      src="assets/planets/tierra-fondo.gif"
+      alt=""
+      class="earth"
+      aria-hidden="true"
+    />
+    <!-- NUEVA LUNA AQUÍ -->
+    <img
+      src="assets/planets/luna-fondo.gif"
+      alt=""
+      class="moon"
+      aria-hidden="true"
+    />
+     <!-- NUEVO SOL AQUÍ -->
+    <img
+      src="assets/planets/sol-fondo.gif"
+      alt=""
+      class="sun"
+      aria-hidden="true"
+    />
+
+    <!-- Contenido principal -->
+    <main id="screen-menu" class="menu">
+      <header class="title-block">
+        <h1 class="logo">KIRKS</h1>
+        <h2 class="subtitle">MISSION CONTROL</h2>
+        <p class="event">NASA SPACE APPS CHALLENGE 2026</p>
+      </header>
+
+      <p class="tagline">
+        Tu misión comienza más allá de la Tierra.<br />
+        Explora, investiga y descubre el universo.
+      </p>
+
+      <nav class="buttons">
+        <button id="btn-jugar" class="btn btn-primary">JUGAR</button>
+        <button id="btn-como" class="btn btn-secondary">CÓMO SE JUEGA</button>
+      </nav>
+
+      <button id="btn-audio" class="audio-toggle" aria-pressed="false">
+        ♪ Música: OFF
+      </button>
+    </main>
+
+    <!-- Pantalla 2: Selección de misión -->
+    <section
+      id="screen-mission"
+      class="mission"
+      aria-labelledby="mission-title"
+      hidden
+    >
+      <header class="mission-header">
+        <h2 id="mission-title" class="mission-title" tabindex="-1">
+          SELECCIÓN DE MISIÓN
+        </h2>
+        <p class="mission-sub">Define los parámetros antes del despegue.</p>
+      </header>
+
+      <form id="mission-form" class="mission-form" novalidate>
+        <!-- 1. Destino -->
+        <fieldset class="panel">
+          <legend>Destino</legend>
+           <label class="destino">
+              <input type="radio" name="destino" value="luna" required />
+              <!-- Cambiado a imagen -->
+              <img src="assets/planets/luna.png" alt="Luna" class="destino-icon" />
+              <strong>Luna</strong>
+              <small>Gravedad baja y terreno irregular.</small>
+            </label>
+            <label class="destino">
+              <input type="radio" name="destino" value="marte" />
+              <img src="assets/planets/marte.png" alt="Marte" class="destino-icon" />
+              <strong>Marte</strong>
+              <small>Terreno rocoso y tormentas de polvo.</small>
+            </label>
+            <label class="destino">
+              <input type="radio" name="destino" value="asteroide" />
+              <img src="assets/planets/Asteroide .png" alt="Asteroide" class="destino-icon" />
+              <strong>Asteroide</strong>
+              <small>Gravedad casi nula y campos de rocas.</small>
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 2. Objetivo científico -->
+        <fieldset class="panel">
+          <legend>Objetivo científico</legend>
+          <select id="objetivo" name="objetivo" disabled required>
+            <option value="">Elige primero un destino</option>
+          </select>
+          <p id="objetivo-desc" class="hint" aria-live="polite"></p>
+        </fieldset>
+
+        <!-- 3. Dificultad -->
+        <fieldset class="panel">
+          <legend>Dificultad</legend>
+          <div class="dificultades">
+            <label class="dificultad">
+              <input type="radio" name="dificultad" value="cadete" checked />
+              <span
+                ><strong>Cadete</strong
+                ><small>Más combustible, menos obstáculos.</small></span
+              >
+            </label>
+            <label class="dificultad">
+              <input type="radio" name="dificultad" value="piloto" />
+              <span><strong>Piloto</strong><small>Equilibrado.</small></span>
+            </label>
+            <label class="dificultad">
+              <input type="radio" name="dificultad" value="comandante" />
+              <span
+                ><strong>Comandante</strong
+                ><small>Recursos escasos y mucho riesgo.</small></span
+              >
+            </label>
+          </div>
+        </fieldset>
+
+        <!-- 4. Nombre de la misión -->
+        <fieldset class="panel">
+          <legend>Nombre de la misión</legend>
+          <div class="nombre-row">
+            <input
+              id="nombre"
+              name="nombre"
+              type="text"
+              maxlength="28"
+              placeholder="Ej. Kirks-01"
+              autocomplete="off"
+              required
+            />
+            <button type="button" id="btn-azar" class="btn btn-secondary">
+              AL AZAR
+            </button>
+          </div>
+          <p id="error" class="error" role="alert" hidden></p>
+        </fieldset>
+
+        <div class="acciones">
+          <button type="button" id="btn-volver" class="btn btn-secondary">
+            VOLVER
+          </button>
+          <button type="submit" class="btn btn-primary">INICIAR MISIÓN</button>
+        </div>
+      </form>
+    </section>
+
+    <footer class="footer">LOS KIRKS · SPACE EXPLORATION SYSTEM</footer>
+
+    <!-- Modal -->
+    <div id="modal-como" class="modal" hidden>
+      <div
+        class="modal-card"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-titulo"
+      >
+        <h3 id="modal-titulo">CÓMO SE JUEGA</h3>
+        <ol>
+          <li>Elige un destino: Luna, Marte o un asteroide.</li>
+          <li>Define tu objetivo científico y la dificultad.</li>
+          <li>Controla la nave, recoge recursos y evita obstáculos.</li>
+          <li>Completa los objetivos para sumar puntos.</li>
+        </ol>
+        <button id="btn-cerrar" class="btn btn-primary">ENTENDIDO</button>
+      </div>
+    </div>
+
+    <audio
+      id="musica"
+      loop
+      preload="auto"
+      src="assets/audio/ambient.mp3"
+    ></audio>
+
+    <script src="js/mission.js"></script>
+    <script src="js/game.js"></script>
+  </body>
+</html>

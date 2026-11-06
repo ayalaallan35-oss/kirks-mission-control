@@ -1,0 +1,755 @@
+:root {
+  --bg-0: #02040a;
+  --bg-1: #051024;
+  --cyan: #00d4ff;
+  --blue: #3d7bff;
+  --violet: #8a2be2;
+  --text: #e6f4ff;
+  --muted: #6d86a8;
+  --font-display: "Orbitron", "Segoe UI", sans-serif;
+  --font-body: "Rajdhani", "Segoe UI", sans-serif;
+
+  /* --- CONFIGURACIÓN DE LA ANIMACIÓN DEL COHETE --- */
+  --ship-speed: 24s;
+  --ship-angle-out: -35deg;
+  --ship-angle-in: 145deg;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-0);
+  overflow-x: hidden;
+}
+
+body {
+  font-family: var(--font-body);
+  color: var(--text);
+  background: radial-gradient(
+    circle at 50% 50%,
+    var(--bg-1) 0%,
+    var(--bg-0) 80%
+  );
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+/* ---------- Fondo: Estrellas y Nebulosa ---------- */
+.stars {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.stars-far {
+  background-image:
+    radial-gradient(1px 1px at 10% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 30% 70%, #cfe8ff, transparent),
+    radial-gradient(1px 1px at 60% 15%, #fff, transparent),
+    radial-gradient(1px 1px at 80% 55%, #aed4ff, transparent),
+    radial-gradient(1px 1px at 45% 90%, #fff, transparent),
+    radial-gradient(1px 1px at 92% 85%, #fff, transparent);
+  background-size: 400px 400px;
+  animation: drift 150s linear infinite;
+  opacity: 0.4;
+}
+
+.stars-near {
+  background-image:
+    radial-gradient(2px 2px at 20% 40%, #fff, transparent),
+    radial-gradient(2px 2px at 70% 25%, #9fd8ff, transparent),
+    radial-gradient(2px 2px at 85% 75%, #fff, transparent),
+    radial-gradient(2px 2px at 40% 80%, #ffffff, transparent);
+  background-size: 600px 600px;
+  animation: drift 100s linear infinite;
+  opacity: 0.7;
+}
+
+.nebula {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(
+      circle at 30% 40%,
+      rgba(138, 43, 226, 0.15),
+      transparent 50%
+    ),
+    radial-gradient(circle at 70% 60%, rgba(0, 212, 255, 0.1), transparent 50%);
+  filter: blur(60px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes drift {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-600px);
+  }
+}
+
+/* ---------- Planeta Tierra ---------- */
+.earth {
+  position: absolute;
+  left: -40vw;
+  bottom: -55vh;
+  width: 155vw;
+  max-width: 1500px;
+  height: auto;
+  image-rendering: pixelated;
+  opacity: 0.95;
+  filter: drop-shadow(0 0 40px rgba(0, 150, 255, 0.3));
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ---------- NUEVA LUNA ---------- */
+.moon {
+  position: absolute;
+  top: 8%; /* Posición en la parte superior */
+  right: 8%; /* Posición a la derecha */
+  width: clamp(120px, 15vw, 250px); /* Tamaño adaptable */
+  height: auto;
+  image-rendering: pixelated;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 35px rgba(255, 255, 255, 0.2));
+  pointer-events: none;
+  z-index: 1;
+  /* Animación de flotación suave */
+  animation: floatMoon 6s ease-in-out infinite alternate;
+}
+
+@keyframes floatMoon {
+  from {
+    transform: translateY(0px);
+  }
+  to {
+    transform: translateY(-15px);
+  }
+}
+
+/* ---------- NUEVO SOL ---------- */
+.sun {
+  display: none; /* Oculto por defecto en la Fase 1 */
+  position: absolute;
+  top: -1%;
+  left: -1%;
+  width: clamp(250px, 35vw, 300px);
+  height: auto;
+  image-rendering: pixelated;
+  opacity: 0.85;
+  filter: drop-shadow(0 0 60px rgba(255, 140, 0, 0.6));
+  pointer-events: none;
+  z-index: 1;
+  animation: pulseSun 8s ease-in-out infinite alternate;
+}
+
+/* Magia CSS: Mostrar el sol SOLO cuando la pantalla de misión esté visible */
+body:has(#screen-mission:not([hidden])) .sun {
+  display: block;
+}
+
+@keyframes pulseSun {
+  from {
+    transform: scale(1);
+    filter: drop-shadow(0 0 50px rgba(255, 140, 0, 0.5));
+  }
+  to {
+    transform: scale(1.05);
+    filter: drop-shadow(0 0 80px rgba(255, 180, 0, 0.8));
+  }
+}
+
+/* ---------- Nave Espacial ---------- */
+.ship {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 200px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 0 15px rgba(0, 212, 255, 0.8));
+  pointer-events: none;
+  z-index: 2;
+  animation: flyDiagonal var(--ship-speed) linear infinite;
+  will-change: transform;
+}
+
+@keyframes flyDiagonal {
+  0% {
+    transform: translate(-20vw, 110vh) rotate(var(--ship-angle-out));
+  }
+  48% {
+    transform: translate(120vw, -20vh) rotate(var(--ship-angle-out));
+  }
+  50% {
+    transform: translate(120vw, -20vh) rotate(var(--ship-angle-in));
+  }
+  98% {
+    transform: translate(-20vw, 110vh) rotate(var(--ship-angle-in));
+  }
+  100% {
+    transform: translate(-20vw, 110vh)
+      rotate(calc(var(--ship-angle-in) + 180deg));
+  }
+}
+
+/* ---------- Menú Principal ---------- */
+.menu {
+  position: relative;
+  z-index: 3;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 2rem;
+  animation: fadeIn 1.2s ease-out both;
+  margin-left: 10vw;
+}
+
+.title-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(4rem, 11vw, 8rem);
+  letter-spacing: 0.1em;
+  background: linear-gradient(90deg, #00e5ff 0%, #3d7bff 50%, #9c5cff 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 25px rgba(0, 212, 255, 0.6));
+  line-height: 1;
+}
+
+.subtitle {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: clamp(1.2rem, 3vw, 2rem);
+  letter-spacing: 0.5em;
+  color: #e6f4ff;
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  margin-right: -0.5em;
+}
+
+.event {
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  letter-spacing: 0.35em;
+  color: var(--cyan);
+  opacity: 0.9;
+  margin-top: 0.5rem;
+}
+
+.tagline {
+  font-size: 1.25rem;
+  color: var(--muted);
+  line-height: 1.6;
+  max-width: 480px;
+  margin-bottom: 1rem;
+  font-weight: 500;
+  text-align: center;
+}
+
+/* ---------- Botones ---------- */
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+  width: min(340px, 80vw);
+}
+
+.btn {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  letter-spacing: 0.25em;
+  padding: 1.1rem 1.5rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.btn:focus-visible,
+.audio-toggle:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 4px;
+}
+
+.btn-primary {
+  background: linear-gradient(90deg, #00d4ff 0%, #3d7bff 100%);
+  color: #02040a;
+  border: 2px solid #00d4ff;
+  box-shadow: 0 0 20px rgba(0, 212, 255, 0.4);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 0 35px rgba(0, 212, 255, 0.8);
+  color: #ffffff;
+}
+
+.btn-secondary {
+  background: rgba(0, 212, 255, 0.05);
+  color: var(--text);
+  border: 1px solid #3d7bff;
+  box-shadow: inset 0 0 10px rgba(0, 212, 255, 0.1);
+}
+
+.btn-secondary:hover {
+  background: rgba(0, 212, 255, 0.15);
+  border-color: var(--cyan);
+  transform: translateY(-2px);
+}
+
+.audio-toggle {
+  margin-top: 1rem;
+  background: none;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  letter-spacing: 0.15em;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.audio-toggle:hover {
+  color: var(--cyan);
+  text-shadow: 0 0 10px var(--cyan);
+}
+
+/* ---------- Footer ---------- */
+.footer {
+  position: relative;
+  text-align: center;
+  font-family: var(--font-display);
+  font-size: 0.65rem;
+  letter-spacing: 0.4em;
+  color: rgba(109, 134, 168, 0.5);
+  z-index: 3;
+  padding: 1.5rem;
+  margin-top: auto;
+}
+
+/* ---------- Modal ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(2, 4, 10, 0.85);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+}
+
+.modal[hidden] {
+  display: none;
+}
+
+.modal-card {
+  background: linear-gradient(160deg, #0a1733, #050a18);
+  border: 1px solid rgba(0, 212, 255, 0.4);
+  border-radius: 12px;
+  padding: 2.5rem;
+  width: min(480px, 90vw);
+  box-shadow: 0 0 50px rgba(0, 212, 255, 0.25);
+  animation: fadeIn 0.3s ease-out both;
+}
+
+.modal-card h3 {
+  font-family: var(--font-display);
+  letter-spacing: 0.25em;
+  color: var(--cyan);
+  margin-bottom: 1.2rem;
+  text-align: center;
+}
+
+.modal-card ol {
+  padding-left: 1.5rem;
+  margin-bottom: 2rem;
+  line-height: 1.8;
+  font-size: 1.1rem;
+  color: var(--text);
+}
+
+.modal-card li + li {
+  margin-top: 0.5rem;
+}
+.modal-card .btn {
+  width: 100%;
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Responsive (Móviles y Tablets) ---------- */
+@media (max-width: 900px) {
+  .menu {
+    margin-left: 0;
+    padding: 2rem 1rem;
+    gap: 1.2rem;
+  }
+
+  .logo {
+    font-size: clamp(3rem, 15vw, 5rem);
+  }
+
+  .subtitle {
+    font-size: clamp(0.9rem, 4vw, 1.2rem);
+    letter-spacing: 0.2em;
+    margin-right: 0;
+  }
+
+  .event {
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+  }
+
+  .tagline {
+    font-size: 1rem;
+    padding: 0 1rem;
+  }
+
+  .buttons {
+    width: 100%;
+    max-width: 320px;
+  }
+
+  .btn {
+    letter-spacing: 0.1em;
+    font-size: 0.9rem;
+    padding: 1rem;
+  }
+
+  .earth {
+    width: 150vw;
+    left: -75vw;
+    bottom: -10vh;
+    opacity: 0.3;
+  }
+
+  /* Ajuste de la luna para móviles */
+  .moon {
+    width: 100px;
+    top: 5%;
+    right: -2%; /* Ligeramente fuera de pantalla para que no estorbe */
+    opacity: 0.3; /* Más transparente para no distraer con los botones */
+    animation: none; /* Desactivar animación en móvil para ahorrar batería */
+  }
+
+  .sun {
+    width: 200px;
+    top: -1%;
+    left: -10%;
+    opacity: 0.3; /* Más transparente para no distraer con los botones */
+    animation: none; /* Desactivar animación en móvil para ahorrar batería */
+  }
+
+  .ship {
+    display: none;
+  }
+
+  .footer {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Fase 02 · Selección de misión (usa las variables de style.css) */
+
+.menu[hidden],
+.mission[hidden] {
+  display: none;
+}
+
+.mission {
+  position: relative;
+  z-index: 3;
+  width: min(760px, 94vw);
+  margin: 0 auto;
+  padding: 2.5rem 0 3rem;
+  animation: fadeIn 0.8s ease-out both;
+}
+
+.mission-header {
+  text-align: center;
+  margin-bottom: 1.8rem;
+}
+
+.mission-title {
+  outline: none;
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1.6rem, 5vw, 2.6rem);
+  letter-spacing: 0.15em;
+  background: linear-gradient(90deg, #00e5ff, #3d7bff 50%, #9c5cff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  filter: drop-shadow(0 0 18px rgba(0, 212, 255, 0.5));
+}
+
+.mission-sub {
+  color: var(--muted);
+  font-size: 1.15rem;
+  margin-top: 0.4rem;
+}
+
+.mission-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.1rem;
+}
+
+/* Paneles */
+.panel {
+  background: rgba(10, 23, 51, 0.7);
+  border: 1px solid rgba(0, 212, 255, 0.25);
+  border-radius: 12px;
+  padding: 1.2rem 1.3rem 1.3rem;
+  backdrop-filter: blur(6px);
+}
+
+.panel legend {
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--cyan);
+  padding: 0 0.6rem;
+}
+
+/* Radios nativos ocultos pero accesibles */
+.panel input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Destinos */
+.destinos {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+
+.destino {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  text-align: center;
+  padding: 1rem 0.6rem;
+  border: 1px solid rgba(61, 123, 255, 0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    box-shadow 0.25s;
+}
+
+.destino strong {
+  font-family: var(--font-display);
+  letter-spacing: 0.15em;
+  font-size: 0.95rem;
+}
+
+.destino small,
+.dificultad small,
+.hint {
+  color: var(--muted);
+  font-size: 1rem;
+  line-height: 1.3;
+}
+
+.destino:hover,
+.dificultad:hover {
+  border-color: var(--cyan);
+}
+
+.destino:has(input:checked),
+.dificultad:has(input:checked) {
+  border-color: var(--cyan);
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 22px rgba(0, 212, 255, 0.35);
+}
+
+.destino:has(input:focus-visible),
+.dificultad:has(input:focus-visible) {
+  outline: 2px solid var(--cyan);
+  outline-offset: 3px;
+}
+
+/* --- NUEVOS ESTILOS PARA TUS IMÁGENES PIXEL ART --- */
+.destino-icon {
+  width: 64px;
+  height: 64px;
+  object-fit: contain; /* Evita que las imágenes se deformen */
+  image-rendering: pixelated; /* Mantiene la nitidez del pixel art */
+  filter: drop-shadow(0 0 12px rgba(255, 255, 255, 0.15)); /* Brillo sutil */
+  transition:
+    transform 0.3s ease,
+    filter 0.3s ease;
+}
+
+/* Efecto visual cuando el usuario selecciona un destino */
+.destino:has(input:checked) .destino-icon {
+  transform: scale(1.1);
+  filter: drop-shadow(0 0 15px var(--cyan));
+}
+/* --------------------------------------------------- */
+
+/* Select y input */
+.panel select,
+.panel input[type="text"] {
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 1.15rem;
+  color: var(--text);
+  background: rgba(2, 4, 10, 0.7);
+  border: 1px solid #3d7bff;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+}
+
+.panel select:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.panel select:focus-visible,
+.panel input[type="text"]:focus-visible {
+  outline: 2px solid var(--cyan);
+  outline-offset: 2px;
+}
+
+.hint {
+  margin-top: 0.6rem;
+  min-height: 1.3em;
+}
+
+/* Dificultad */
+.dificultades {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.9rem;
+}
+
+.dificultad {
+  display: block;
+  padding: 0.9rem 1rem;
+  border: 1px solid rgba(61, 123, 255, 0.35);
+  border-radius: 10px;
+  cursor: pointer;
+  transition:
+    border-color 0.25s,
+    background 0.25s,
+    box-shadow 0.25s;
+}
+
+.dificultad strong {
+  display: block;
+  font-family: var(--font-display);
+  letter-spacing: 0.12em;
+  font-size: 0.9rem;
+  margin-bottom: 0.25rem;
+}
+
+/* Nombre */
+.nombre-row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.nombre-row .btn {
+  padding: 0.7rem 1.2rem;
+  font-size: 0.8rem;
+}
+
+.error {
+  color: #ff6b81;
+  font-size: 1.05rem;
+  margin-top: 0.6rem;
+}
+
+/* Acciones */
+.acciones {
+  display: flex;
+  gap: 1rem;
+  justify-content: flex-end;
+  margin-top: 0.4rem;
+}
+
+.acciones .btn-primary {
+  flex: 1;
+  max-width: 320px;
+}
+
+@media (max-width: 640px) {
+  .destinos,
+  .dificultades {
+    grid-template-columns: 1fr;
+  }
+  .destino {
+    flex-direction: row;
+    text-align: left;
+    gap: 0.9rem;
+  }
+
+  /* Ajuste de las imágenes pixel art para móviles */
+  .destino .destino-icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+  }
+
+  .destino strong {
+    min-width: 6.5rem;
+  }
+  .nombre-row,
+  .acciones {
+    flex-direction: column;
+  }
+  .acciones .btn-primary {
+    max-width: none;
+  }
+}
